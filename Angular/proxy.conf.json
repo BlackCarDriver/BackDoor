@@ -1,0 +1,11 @@
+{
+  "/server": {
+    "target": "http://localhost:8083",
+    "logLevel": "debug",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/server": ""
+    }
+  }
+}

@@ -1,0 +1,29 @@
+<div class="content">
+    <h2 style="text-align: center">Plugin Update</h2>
+        <form action="" enctype="multipart/form-data">
+                <div class="row">
+                    题号：
+                    <input type="text" maxlength="20" required id="pid">
+                </div>
+                <div class="row">
+                    备注：
+                    <textarea name="tag" maxlength="100" style="height: 4em;" required  id="tag"></textarea>
+                </div>
+                <div class="row">
+                    <input type="file" multiple=false id="file">
+                </div>
+                <div class="row">
+                    <input type="button" value="Updata" (click)="test()">
+                </div>
+        </form>
+    <div class="row">
+        <p class="warm">
+            更新插件可能会使原有插件被关闭和删除，请谨慎操作。
+        </p>
+    </div>
+    <div class="result-box">
+        <p class="result" [ngClass]="{'success':result_status==0}">
+            Result:{{result_msg}}
+        </p>
+    </div>
+</div>

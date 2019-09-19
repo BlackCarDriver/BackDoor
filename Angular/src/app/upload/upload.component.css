@@ -1,0 +1,26 @@
+.content {
+    width: 500px;
+    color: #535455;
+}
+
+.warm {
+    color: #f04b4b;
+}
+
+.result-box {
+    width: 100%;
+    margin: 1em auto;
+}
+
+.result {
+    font-size: 1.1em;
+    font-weight: 600;
+    word-break: break-word;
+    padding: 0.5em 1em;
+    color: #e62020;
+    background-color: #b5f0d0;
+}
+
+.success {
+    color: green;
+}

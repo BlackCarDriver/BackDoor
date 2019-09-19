@@ -1,0 +1,15 @@
+<div class="background full">
+        <div style="color: #fff; text-align: center"><h1>Welcome To BackDoor</h1></div>
+        <div style="text-align: center;">
+                <input type="text" id="tokeninput" placeholder="Input token here" maxlength="25" [(ngModel)]="token">
+        </div>
+        <div class="main-box">
+                <div class="row choice">
+                        <div class="c-item" *ngFor="let row of choices" [class.active]="row.name==chosing" (click)="setChoice(row.name)"
+                        title="{{row.name}}"   routerLink={{row.routerline}}>
+                                <p>{{row.name[0]}}</p>
+                        </div>
+                </div>
+                <router-outlet></router-outlet>
+        </div>
+</div>

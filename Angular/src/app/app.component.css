@@ -1,0 +1,72 @@
+.background {
+    background: #34e89e;
+    background: -webkit-linear-gradient(to top, #0f3443, #34e89e);
+    background: linear-gradient(to top, #0f3443, #34e89e);
+    background-size: cover;
+    display: flow-root;
+    font-size: 16px;
+}
+
+.full {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    min-height: 100%;
+}
+
+.main-box {
+    min-height: 100px;
+    width: max-content;
+    position: relative;
+    margin: 6em auto 1em auto;
+    box-shadow: 0 0 20px rgba(50, 50, 50, 0.1);
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 1em;
+    min-width: 300px;
+}
+
+.choice {
+    position: absolute;
+    height: 4em;
+    top: -3em;
+    margin: -1em;
+    width: 100%;
+}
+
+.c-item {
+    --len: 3em;
+    height: var(--len);
+    width: var(--len);
+    border-radius: var(--len);
+    background-color: #34e89e;
+    display: inline-block;
+    margin: 0.6em;
+    color: #fff;
+    text-align: center;
+    cursor: pointer;
+}
+
+.c-item:hover, .active {
+    background-color: #0aa162;
+}
+
+.c-item p {
+    font-size: 2em;
+    margin: 0;
+    font-weight: 600;
+    text-transform: uppercase;
+    line-height: 1.4em;
+}
+
+#tokeninput {
+    background: transparent;
+    border-radius: 4em;
+    color: #fff;
+    border: 3px solid #fff;
+    width: 25em;
+    font-weight: bolder;
+    margin-top: -1em;
+    text-align: center;
+}
