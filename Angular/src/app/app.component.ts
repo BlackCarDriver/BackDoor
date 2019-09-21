@@ -11,7 +11,7 @@ export class AppComponent {
   //function lists
   choices : choice[] = [
     {name:"plugin-upload", routerline:"/upload"},
-    {name:"display-state", routerline:"/healty"},
+    {name:"linux-stat", routerline:"/linstat"},
     {name:"testing", routerline:"/test"},
   ];
   //the function which is displying

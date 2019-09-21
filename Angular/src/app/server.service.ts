@@ -28,5 +28,5 @@ export class RequestProto{
 export class ReplyProto{
   status?:number;
   msg?:string;
-  data?:string;
+  data?:any;
 }

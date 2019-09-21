@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import {ServerService} from '../server.service';
 import {RequestProto, ReplyProto} from '../server.service';
 import {AppComponent} from '../app.component';
-import { flushMicrotasks } from '@angular/core/testing';
 
 @Component({
   selector: 'app-upload',

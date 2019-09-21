@@ -6,12 +6,14 @@ import { UploadComponent } from './upload/upload.component';
 import { AppRoutingModule } from './app-routing.module';
 import { NotfoundComponent } from './notfound/notfound.component';
 import { FormsModule } from '@angular/forms';
+import { LinuxstatComponent } from './linuxstat/linuxstat.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     UploadComponent,
     NotfoundComponent,
+    LinuxstatComponent,
   ],
   imports: [
     BrowserModule,

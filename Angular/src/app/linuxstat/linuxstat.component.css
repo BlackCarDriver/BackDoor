@@ -1,0 +1,65 @@
+.content {
+    width: 600px;
+    color: #535455;
+}
+
+.title h3 {
+    color: #1f826b;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, .25);
+    margin: 0.3em;
+}
+
+.emebox {
+    min-height: 3em;
+    margin: 5px auto;
+    padding: 5px;
+    background-color: #c7e1d7;
+    border-left: 7px solid #2ab886;
+    border-radius: 3px;
+}
+
+.rfbtn {
+    position: absolute;
+    top: 1em;
+    right: 1em;
+}
+
+.oft {
+    width: 33%;
+    min-height: 1em;
+    display: inline-block;
+}
+
+.oft p {
+    display: inline;
+    font-size: 20px;
+}
+
+.oft .t {
+    color: #168c71;
+    margin-left: 1em;
+    margin-right: 4px;
+}
+
+.oft .d {
+    font-size: 1.5em;
+    color: #d2414e;
+    font-weight: 600;
+}
+
+.oft .e {
+    font-size: 1em;
+}
+.mem-area li{
+    margin-bottom: 3px;
+}
+.mem-area .tt {
+    font-weight: 600;
+    width: 20%;
+    display: inline-block;
+    text-align: center;
+}
+.mem-area .bar {
+    display: inline;
+    padding: 0px 6px;
+}
