@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
@@ -10,9 +11,13 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"os/exec"
 	"regexp"
+	"strings"
 
 	"github.com/astaxie/beego/logs"
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 )
 
 type RequestRroto struct {
@@ -25,21 +30,41 @@ type ReplyRroto struct {
 	Msg    string      `json:"msg"`
 	Data   interface{} `json:"data"`
 }
+type Memstat struct {
+	Total     int `json:"total"`
+	Used      int `json:"used"`
+	Free      int `json:"free"`
+	Shared    int `json:"shared"`
+	Cache     int `json:"cache"`
+	Available int `json:"available"`
+}
+type Cpustat struct {
+	OMin  float64 `json:"omin"`
+	FMin  float64 `json:"fmin"`
+	FtMin float64 `json:"ftmin"`
+}
 
+const htmlFilePath = "./dist/backdoor/"
 const md5_token = "582846f37273cf8f4b0cc17d67c34c47"
 const uploadFileSavePath = "./upload"
 
 func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/backdoor/api", BackDoorApi)
-	mux.HandleFunc("/backdoor/form", BackDoorForm)
-	server := &http.Server{
-		Addr:    ":8083",
-		Handler: mux,
-	}
-	err := server.ListenAndServe()
+	logs.SetLogger("console")
+	logs.EnableFuncCallDepth(true)
+	logs.SetLogFuncCallDepth(3)
+
+	router := mux.NewRouter()
+	router.HandleFunc("/backdoor/api", BackDoorApi)
+	router.HandleFunc("/backdoor/form", BackDoorForm)
+	router.PathPrefix(`/backdoor/`).Handler(http.StripPrefix(`/backdoor/`, NewDistHandle("./dist/backdoor/")))
+	err := http.ListenAndServe(":8083", handlers.CORS(
+		handlers.AllowedHeaders([]string{"X-Requested-With", "X-Content-Type-Options", "Content-Type", "Authorization", "withCredentials"}),
+		handlers.AllowedMethods([]string{"GET", "POST"}),
+		handlers.AllowedOrigins([]string{"*"}),
+	)(router),
+	)
 	if err != nil {
-		fmt.Println(err)
+		logs.Error(err)
 	}
 }
 
@@ -68,8 +93,16 @@ func BackDoorApi(w http.ResponseWriter, r *http.Request) {
 	}
 	//switch in different function according to the api
 	switch postdata.Api {
-	case "UpdataPlugIn":
-		logs.Info("TODO...")
+	case "linuxstat":
+		var linuxstat struct {
+			CpuState Cpustat `json:"cpuState"`
+			MenState Memstat `json:"menState"`
+			VmState  string  `json:"vmState"`
+		}
+		linuxstat.CpuState, _ = GetUptime()
+		linuxstat.MenState, _ = GetFree()
+		linuxstat.VmState, _ = GetVmstat()
+		response.Data = linuxstat
 	default:
 		response.Status = -99
 		response.Msg = fmt.Sprintf("Unsuppose api: %s", postdata.Api)
@@ -115,11 +148,11 @@ func BackDoorForm(w http.ResponseWriter, r *http.Request) {
 	}
 	//use different function according to the api
 	switch api {
-	case "pluginupdate": //upadate plug in by upload os file
+	case "pluginupdate": //upadate plug in by upload so file
 		pid := getMultipartFormValue(r.MultipartForm, "pid")
 		tag := getMultipartFormValue(r.MultipartForm, "tag")
 		logs.Info(pid, tag)
-		if files, _ := r.MultipartForm.File["osfile"]; len(files) == 0 {
+		if files, _ := r.MultipartForm.File["sofile"]; len(files) == 0 {
 			response.Status = -3
 			response.Msg = fmt.Sprintf("Can't find file in the from")
 			logs.Error(response.Msg)
@@ -137,7 +170,7 @@ func BackDoorForm(w http.ResponseWriter, r *http.Request) {
 				goto tail
 			}
 			//check file name and type
-			reg, _ := regexp.Compile(`^[^\.]+\.os$`)
+			reg, _ := regexp.Compile(`^[^\.]+\.so$`)
 			if !reg.MatchString(name) {
 				response.Status = -5
 				response.Msg = "The name or type of the upload-file is reject!"
@@ -216,4 +249,88 @@ func getMultipartFormValue(f *multipart.Form, key string) string {
 		return ""
 	}
 	return arrays[0]
+}
+
+//============================linux stat tool function ====================
+
+//exec vmstat command to get the report of virtual memory statistics
+func GetVmstat() (string, error) {
+	res := ""
+	var err error
+	if res, err = linuxExec("vmstat"); err != nil {
+		logs.Error(err)
+	} else {
+		res = strings.Replace(res, "\n", "</br>", -1)
+	}
+	return res, err
+}
+
+//exec free command to get the message of memory using
+func GetFree() (Memstat, error) {
+	data := Memstat{}
+	var err error
+	if res, err := linuxExec("free", "-m"); err != nil {
+		logs.Error(err)
+	} else {
+		sid := strings.Index(res, "Mem:")
+		eid := strings.Index(res, "Swap:")
+		res := res[sid+4 : eid]
+		fmt.Sscanf(res, "%d %d %d %d %d %d", &data.Total, &data.Used, &data.Free, &data.Shared, &data.Cache, &data.Available)
+	}
+	return data, err
+}
+
+//exec uptime command to get the message of System load averages
+func GetUptime() (Cpustat, error) {
+	data := Cpustat{}
+	var err error
+	if res, err := linuxExec("uptime"); err != nil {
+		logs.Error(err)
+	} else {
+		index := strings.LastIndex(res, ":")
+		fmt.Sscanf(res[index+1:], "%f, %f, %f", &data.OMin, &data.FMin, &data.FtMin)
+	}
+	return data, err
+}
+
+//exec a linux command and return the output string
+func linuxExec(name string, arg ...string) (string, error) {
+	var out, stderr bytes.Buffer
+	cmd := exec.Command(name, arg...)
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+	var err error
+	if err = cmd.Start(); err != nil {
+		return "", err
+	} else if err = cmd.Wait(); err != nil {
+		return "", err
+	}
+	return out.String(), nil
+}
+
+//============================== proxy tool function =====================
+type DistHandle struct {
+	path string
+}
+
+func NewDistHandle(p string) *DistHandle {
+	return &DistHandle{p}
+}
+
+func (t *DistHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path == "" {
+		r.URL.Path = "index.html"
+	}
+	filePath := fmt.Sprintf("%s/%s", strings.TrimRight(t.path, "/"), strings.TrimLeft(r.URL.Path, "/"))
+	logs.Info(filePath)
+	if _, err := os.Stat(filePath); err == nil {
+		fmt.Println(filePath)
+		http.ServeFile(w, r, filePath)
+	} else if os.IsNotExist(err) {
+		logs.Error(err)
+		filePath = t.path + `/index.html`
+		http.ServeFile(w, r, filePath)
+	} else {
+		logs.Error(err)
+	}
 }

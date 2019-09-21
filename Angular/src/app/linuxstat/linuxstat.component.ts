@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ServerService, RequestProto, ReplyProto } from '../server.service';
+import { ServerService, RequestProto } from '../server.service';
 import { AppComponent } from '../app.component';
 
 @Component({
@@ -57,7 +57,7 @@ export class LinuxstatComponent implements OnInit {
 
 
 //virtual memory statistics
-type MemStat = {
+type MemStat = { 
   total: number;
   used: number;
   free: number;

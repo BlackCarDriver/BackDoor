@@ -5,7 +5,7 @@
         </div>
         <div class="main-box">
                 <div class="row choice">
-                        <div class="c-item" *ngFor="let row of choices" [class.active]="row.name==chosing" (click)="setChoice(row.name)"
+                        <div class="c-item" *ngFor="let row of choices" [class.active]="row.routerline==chosing" (click)="setChoice(row.routerline)"
                         title="{{row.name}}"   routerLink={{row.routerline}}>
                                 <p>{{row.name[0]}}</p>
                         </div>

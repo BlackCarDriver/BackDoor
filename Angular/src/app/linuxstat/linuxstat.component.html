@@ -2,9 +2,9 @@
     <h2 style="text-align: center">Linux State</h2>
     <div class="title"><h3>CPU state</h3></div>
     <div class="emebox">
-        <div class="oft"><p class="t">1-min: </p><p class="d">{{mC.omin*100}}</p><p class="e">%</p></div>
-        <div class="oft"><p class="t">5-min: </p><p class="d">{{mC.fmin*100}}</p><p class="e">%</p></div>
-        <div class="oft"><p class="t">15-min: </p><p class="d">{{mC.ftmin*100}}</p><p class="e">%</p></div>
+        <div class="oft"><p class="t">1-min: </p><p class="d">{{mC.omin*100 | number:'2.0-0'}}</p><p class="e">%</p></div>
+        <div class="oft"><p class="t">5-min: </p><p class="d">{{mC.fmin*100 | number:'2.0-0'}}</p><p class="e">%</p></div>
+        <div class="oft"><p class="t">15-min: </p><p class="d">{{mC.ftmin*100 | number:'2.0-0'}}</p><p class="e">%</p></div>
     </div>
     <div class="title"><h3>Memory state</h3></div>
     <div class="emebox mem-area">

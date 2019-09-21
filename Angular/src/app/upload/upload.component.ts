@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import {ServerService} from '../server.service';
-import {RequestProto, ReplyProto} from '../server.service';
 import {AppComponent} from '../app.component';
 
 @Component({
@@ -28,12 +27,14 @@ export class UploadComponent implements OnInit {
       return
     }
     let fileName =  (<HTMLInputElement>document.getElementById('file')).value; 
-    const osReg = /.+os/;
+    const osReg = /.+so/;
     if( fileName =="" || osReg.test(fileName)==false){
       this.result_status = -1;
-      this.result_msg = "Please select a os file to upload!";
+      this.result_msg = "Please select a so file to upload!";
       return
     }
+    this.result_status = 0;
+    this.result_msg = "Please Wait....";
     //collect data into form
     let form = new FormData();
     form.append('api', "pluginupdate"); 

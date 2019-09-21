@@ -5,7 +5,8 @@ import { HttpClient} from '@angular/common/http';
   providedIn: 'root'
 })
 export class ServerService {
-  private addr = "/server";
+  // private addr = "/server";
+  private addr = "";
   public token = "testtoken";
   constructor(private http: HttpClient) { }
 
@@ -17,6 +18,12 @@ export class ServerService {
     var url = this.addr + "/backdoor/form"; 
     return this.http.post<ReplyProto>(url, form, {withCredentials: true});
   }
+  LastSection(){
+    let rawStr = window.location.pathname;
+    let lastSlash = rawStr.lastIndexOf("/");
+    let result = rawStr.substring(lastSlash);
+    return result;
+   }
 }
 
 export class RequestProto{
