@@ -19,7 +19,10 @@ export class LogshowComponent implements OnInit {
   ngOnInit() {
     this.getLogList();
   }
-
+  refresh(){
+    this.getLogList();
+    this.getLogDetail(this.nowShowing);
+  }
   getLogList(){
     let postdata: RequestProto = {
       api: "logslist",
@@ -33,7 +36,6 @@ export class LogshowComponent implements OnInit {
       this.logsList = result.data;
     }, err=>{alert("Get logsList fail: "+err)});
   }
-
   getLogDetail(name?:string){
     this.nowShowing = name;
     if(this.nowShowing==""){
@@ -52,13 +54,11 @@ export class LogshowComponent implements OnInit {
       this.logsDetail = result.data;
     }, err=>{alert("Get getLogDetail fail: "+err)});
   }
-
-  refresh(){
-    this.getLogList();
-    this.getLogDetail(this.nowShowing);
-  }
-
+  //clear the content of select log file
   clearLog(){
+    if (!confirm("Are you sure to clear "+this.nowShowing+"?")){
+      return;
+    }
     let postdata: RequestProto = {
       api: "clearlogs",
       token: this.app.token,
@@ -73,8 +73,11 @@ export class LogshowComponent implements OnInit {
       this.refresh();
     }, err=>{alert("Get clearLog fail: "+err)});
   }
-
+  //delete the log file
   delLog(){
+    if (!confirm("Are you sure to delete "+this.nowShowing+"?")){
+      return;
+    }
     let postdata: RequestProto = {
       api: "deletelogs",
       token: this.app.token,

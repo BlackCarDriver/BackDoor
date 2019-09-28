@@ -17,7 +17,9 @@
     border-radius: 6px;
     border-left: 0.5em solid #337d33;
 }
-
+.active{
+    font-weight: 600;
+}
 .logslist a {
     display: block;
     display: block;
@@ -26,6 +28,6 @@
     font-size: 1.2em;
     width: max-content;
 }
-.logslist a:hover, .active{
+.logslist a:hover{
     color: #1b2e91;
 }

@@ -5,10 +5,10 @@ import { HttpClient} from '@angular/common/http';
   providedIn: 'root'
 })
 export class ServerService {
-  // private addr = "/server";
-  private addr = "http://192.168.100.129:8083";
-  // private addr = "localhost:8083";
-  public token = "testtoken";
+  private addr = "";
+  // private addr = "http://192.168.100.129:8083";
+  // private addr = "http://localhost:8083";
+  public token = "";
   constructor(private http: HttpClient) { }
 
   PostApi(request:RequestProto){

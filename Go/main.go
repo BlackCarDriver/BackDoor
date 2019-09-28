@@ -17,8 +17,6 @@ import (
 	"strings"
 
 	"github.com/astaxie/beego/logs"
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
 )
 
 type RequestRroto struct {
@@ -49,23 +47,21 @@ const htmlFilePath = "./dist/backdoor/"
 const md5_token = "fae0b27c451c728867a567e8c1bb4e53"
 const uploadFileSavePath = "./upload"
 const LogsRootPath = "./logs"
+const backdoorhtmlPaht = "./backdoor.html"
 
 func main() {
 	logs.SetLogger("console")
 	logs.EnableFuncCallDepth(true)
 	logs.SetLogFuncCallDepth(3)
 
-	router := mux.NewRouter()
-	router.HandleFunc("/backdoor/api", BackDoorApi)
-	router.HandleFunc("/backdoor/form", BackDoorForm)
-	router.PathPrefix(`/backdoor/`).Handler(http.StripPrefix(`/backdoor/`, NewDistHandle("./dist/backdoor/")))
+	mux := http.NewServeMux()
+	mux.HandleFunc("/backdoor/api", BackDoorApi)
+	mux.HandleFunc("/backdoor/form", BackDoorForm)
+	mux.HandleFunc("/backdoor/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, backdoorhtmlPaht)
+	})
 	logs.Info("The progress is running at :8083")
-	err := http.ListenAndServe("0.0.0.0:8083", handlers.CORS(
-		handlers.AllowedHeaders([]string{"X-Requested-With", "X-Content-Type-Options", "Content-Type", "Authorization", "withCredentials"}),
-		handlers.AllowedMethods([]string{"GET", "POST"}),
-		handlers.AllowedOrigins([]string{"*"}),
-	)(router),
-	)
+	err := http.ListenAndServe("0.0.0.0:8083", mux)
 	if err != nil {
 		logs.Error(err)
 	}
@@ -73,6 +69,7 @@ func main() {
 
 //handle api-style request
 func BackDoorApi(w http.ResponseWriter, r *http.Request) {
+	setHeader(w)
 	if r.Method != "POST" {
 		logs.Error("Unsuppose method:%s", r.Method)
 		w.WriteHeader(http.StatusBadRequest)
@@ -94,6 +91,17 @@ func BackDoorApi(w http.ResponseWriter, r *http.Request) {
 		logs.Error(response.Msg)
 		goto tail
 	}
+	//catch unexpect panic
+	defer func() {
+		if err, ok := recover().(error); ok {
+			response.Status = -99
+			response.Msg = fmt.Sprintf("Unexpect error happen, error: %v", err)
+			logs.Error(response.Msg)
+			if err := WriteJson(w, &response); err != nil {
+				logs.Error(err)
+			}
+		}
+	}()
 	//switch in different function according to the api
 	switch postdata.Api {
 	case "linuxstat":
@@ -116,7 +124,10 @@ func BackDoorApi(w http.ResponseWriter, r *http.Request) {
 		}
 		response.Data = data
 	case "logsDetail":
-		name := postdata.Data.(string)
+		name := ""
+		if postdata.Data != nil {
+			name = postdata.Data.(string)
+		}
 		res := GetLogsDetail(name)
 		response.Data = res
 
@@ -160,6 +171,7 @@ tail:
 
 //handle form-style request
 func BackDoorForm(w http.ResponseWriter, r *http.Request) {
+	setHeader(w)
 	if r.Method != "POST" {
 		logs.Error("Unsuppose method:%s", r.Method)
 		w.WriteHeader(http.StatusBadRequest)
@@ -167,7 +179,7 @@ func BackDoorForm(w http.ResponseWriter, r *http.Request) {
 	}
 	var api, token string
 	response := ReplyRroto{}
-	if err := r.ParseMultipartForm(20 << 20); err != nil {
+	if err := r.ParseMultipartForm(40 << 20); err != nil {
 		response.Status = -1
 		response.Msg = fmt.Sprintf("%v", err)
 		logs.Error(err)
@@ -290,7 +302,7 @@ func GetLogsDetail(name string) string {
 		logs.Error(err)
 		return ""
 	} else {
-		return content
+		return strings.ReplaceAll(content, "[E]", "🍎")
 	}
 }
 
@@ -317,6 +329,12 @@ func DelLogs(name string) error {
 }
 
 //============================ tool function =========================
+
+func setHeader(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+	w.Header().Set("content-type", "application/json")
+}
 
 //check whether the password is right
 func CheckToken(token string) bool {
@@ -422,31 +440,4 @@ func linuxExec(name string, arg ...string) (string, error) {
 		return "", err
 	}
 	return out.String(), nil
-}
-
-//============================== proxy tool function =====================
-type DistHandle struct {
-	path string
-}
-
-func NewDistHandle(p string) *DistHandle {
-	return &DistHandle{p}
-}
-
-func (t *DistHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path == "" {
-		r.URL.Path = "index.html"
-	}
-	filePath := fmt.Sprintf("%s/%s", strings.TrimRight(t.path, "/"), strings.TrimLeft(r.URL.Path, "/"))
-	logs.Info(filePath)
-	if _, err := os.Stat(filePath); err == nil {
-		fmt.Println(filePath)
-		http.ServeFile(w, r, filePath)
-	} else if os.IsNotExist(err) {
-		logs.Error(err)
-		filePath = t.path + `/index.html`
-		http.ServeFile(w, r, filePath)
-	} else {
-		logs.Error(err)
-	}
 }

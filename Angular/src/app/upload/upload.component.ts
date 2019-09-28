@@ -17,7 +17,7 @@ export class UploadComponent implements OnInit {
   result_msg = "";
   ngOnInit() { }
 
-  test(){
+  upload(){
     //get and check the value from input form 
     let pid =  (<HTMLInputElement>document.getElementById('pid')).value;
     let tag =  (<HTMLInputElement>document.getElementById('tag')).value;
@@ -41,12 +41,12 @@ export class UploadComponent implements OnInit {
     form.append('token', this.app.token); 
     form.append('pid', pid); 
     form.append('tag', tag); 
-    form.append('osfile', (<HTMLInputElement>document.getElementById('file')).files[0]);
+    form.append('sofile', (<HTMLInputElement>document.getElementById('file')).files[0]);
     //post the request
     this.server.PostForm(form).subscribe(result=>{
       console.log(result);
       if(result.status==0){
-        alert("响应成功");
+        alert("操作成功！");
       }else{
         alert("Result.msg: "+result.status + result.msg);
       }
