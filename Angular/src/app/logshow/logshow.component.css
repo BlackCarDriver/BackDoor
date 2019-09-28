@@ -1,0 +1,31 @@
+.content {
+    width: 70em;
+}
+
+.title h3 {
+    margin: 0.5em;
+    width: 7em;
+    display: inline-block;
+}
+
+.textbox {
+    margin: 0.5em;
+    background-color: #9ad2cc;
+    padding: 0.5em;
+    text-align: left;
+    font-family: inherit;
+    border-radius: 6px;
+    border-left: 0.5em solid #337d33;
+}
+
+.logslist a {
+    display: block;
+    display: block;
+    cursor: pointer;
+    color: #00989d;
+    font-size: 1.2em;
+    width: max-content;
+}
+.logslist a:hover, .active{
+    color: #1b2e91;
+}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"crypto/md5"
 	"encoding/hex"
@@ -45,8 +46,9 @@ type Cpustat struct {
 }
 
 const htmlFilePath = "./dist/backdoor/"
-const md5_token = "582846f37273cf8f4b0cc17d67c34c47"
+const md5_token = "fae0b27c451c728867a567e8c1bb4e53"
 const uploadFileSavePath = "./upload"
+const LogsRootPath = "./logs"
 
 func main() {
 	logs.SetLogger("console")
@@ -57,7 +59,8 @@ func main() {
 	router.HandleFunc("/backdoor/api", BackDoorApi)
 	router.HandleFunc("/backdoor/form", BackDoorForm)
 	router.PathPrefix(`/backdoor/`).Handler(http.StripPrefix(`/backdoor/`, NewDistHandle("./dist/backdoor/")))
-	err := http.ListenAndServe(":8083", handlers.CORS(
+	logs.Info("The progress is running at :8083")
+	err := http.ListenAndServe("0.0.0.0:8083", handlers.CORS(
 		handlers.AllowedHeaders([]string{"X-Requested-With", "X-Content-Type-Options", "Content-Type", "Authorization", "withCredentials"}),
 		handlers.AllowedMethods([]string{"GET", "POST"}),
 		handlers.AllowedOrigins([]string{"*"}),
@@ -103,6 +106,45 @@ func BackDoorApi(w http.ResponseWriter, r *http.Request) {
 		linuxstat.MenState, _ = GetFree()
 		linuxstat.VmState, _ = GetVmstat()
 		response.Data = linuxstat
+
+	case "logslist":
+		data, err := GetLogsList()
+		if err != nil {
+			response.Status = -3
+			response.Msg = fmt.Sprint(err)
+			goto tail
+		}
+		response.Data = data
+	case "logsDetail":
+		name := postdata.Data.(string)
+		res := GetLogsDetail(name)
+		response.Data = res
+
+	case "clearlogs", "deletelogs":
+		name := postdata.Data.(string)
+		if name == "" {
+			response.Status = -4
+			response.Msg = "Can't get file name from request"
+			goto tail
+		}
+		if postdata.Api == "clearlogs" {
+			if err := ClearLogs(name); err != nil {
+				response.Status = -5
+				response.Msg = fmt.Sprintf("Clear logs fail: %v", err)
+				goto tail
+			}
+			response.Msg = "Clear success!"
+			goto tail
+		} else if postdata.Api == "deletelogs" {
+			if err := DelLogs(name); err != nil {
+				response.Status = -6
+				response.Msg = fmt.Sprintf("delete logs fail: %v", err)
+				goto tail
+			}
+			response.Msg = "Delete success!"
+			goto tail
+		}
+
 	default:
 		response.Status = -99
 		response.Msg = fmt.Sprintf("Unsuppose api: %s", postdata.Api)
@@ -217,6 +259,63 @@ tail:
 	}
 }
 
+//============================ logger tool function =====================
+//get logs file list in the logs saving directory
+func GetLogsList() ([]string, error) {
+	file, err := os.Open(LogsRootPath)
+	if err != nil {
+		logs.Error(err)
+		return nil, err
+	}
+	defer file.Close()
+	fi, err := file.Readdir(0)
+	if err != nil {
+		logs.Error(err)
+		return nil, err
+	}
+	logsList := make([]string, 0)
+	for _, info := range fi {
+		logsList = append(logsList, info.Name())
+	}
+	return logsList, nil
+}
+
+//get the text of a file
+func GetLogsDetail(name string) string {
+	if name == "" {
+		return ""
+	}
+	logsPath := fmt.Sprintf("%s/%s", LogsRootPath, name)
+	if content, err := ParseFile(logsPath); err != nil {
+		logs.Error(err)
+		return ""
+	} else {
+		return content
+	}
+}
+
+//clear the content of a log file
+func ClearLogs(name string) error {
+	logsPath := fmt.Sprintf("%s/%s", LogsRootPath, name)
+	file, err := os.OpenFile(logsPath, os.O_WRONLY|os.O_TRUNC, 0600)
+	if err != nil {
+		logs.Error(err)
+		return err
+	}
+	defer file.Close()
+	if _, err = file.WriteString(""); err != nil {
+		logs.Error(err)
+		return err
+	}
+	return nil
+}
+
+//delete a logs file in the logs saving directory
+func DelLogs(name string) error {
+	logsPath := fmt.Sprintf("%s/%s", LogsRootPath, name)
+	return os.Remove(logsPath)
+}
+
 //============================ tool function =========================
 
 //check whether the password is right
@@ -249,6 +348,23 @@ func getMultipartFormValue(f *multipart.Form, key string) string {
 		return ""
 	}
 	return arrays[0]
+}
+
+//read a file and parse it into a string 📂
+func ParseFile(path string) (text string, err error) {
+	file, err := os.Open(path)
+	if err != nil {
+		logs.Error(err)
+		return "", fmt.Errorf("Open %s fall: %v", path, err)
+	}
+	defer file.Close()
+	buf := bufio.NewReader(file)
+	bytes, err := ioutil.ReadAll(buf)
+	if err != nil {
+		logs.Error(err)
+		return "", fmt.Errorf("ioutil.ReadAll fall : %v", err)
+	}
+	return string(bytes), nil
 }
 
 //============================linux stat tool function ====================

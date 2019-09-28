@@ -15,12 +15,13 @@ export class AppComponent {
   choices : choice[] = [
     {name:"plugin-upload", routerline:"/upload"},
     {name:"linux-stat", routerline:"/linstat"},
+    {name:"logger", routerline:"/log"},
     {name:"testing", routerline:"/test"},
   ];
   //the function which is displying
   chosing = "/upload";
   //the token used by all function and set by user
-  public token = "testtoken"; 
+  public token = ""; 
   ngOnInit(){
     this.chosing = this.server.LastSection();
   }

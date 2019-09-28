@@ -1,11 +1,13 @@
 body {
     font-family: Cursive;
 }
+
 .row {
     display: block;
     text-align: left;
     margin: 1.5em;
 }
+
 input[type="text"], textarea {
     border: 1px solid #ddd;
     border-radius: 3px;
@@ -17,6 +19,7 @@ input[type="text"], textarea {
     padding: 3px;
     text-indent: 5px;
 }
+
 .g-btn {
     padding: 5px 15px;
     color: white;
@@ -27,12 +30,27 @@ input[type="text"], textarea {
     background-color: #2fd092;
     cursor: pointer;
 }
-.g-btn:hover{
+
+.g-btn:hover {
     background-color: #0f4242;
 }
+
+.g-a-btn {
+    margin: 0 1em;
+    color: white;
+    background-color: #00b331;
+    padding: 2px 4px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.g-a-btn:hover{
+    background-color: #206c35;
+}
+
 .gradually {
     transition: 0.5s all;
 }
-li{
+
+li {
     list-style: none;
 }

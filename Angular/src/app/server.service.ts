@@ -6,17 +6,18 @@ import { HttpClient} from '@angular/common/http';
 })
 export class ServerService {
   // private addr = "/server";
-  private addr = "";
+  private addr = "http://192.168.100.129:8083";
+  // private addr = "localhost:8083";
   public token = "testtoken";
   constructor(private http: HttpClient) { }
 
   PostApi(request:RequestProto){
     var url = this.addr + "/backdoor/api"; 
-    return this.http.post<ReplyProto>(url, JSON.stringify(request), {withCredentials: true});
+    return this.http.post<ReplyProto>(url, JSON.stringify(request));
   }
   PostForm(form:FormData){
     var url = this.addr + "/backdoor/form"; 
-    return this.http.post<ReplyProto>(url, form, {withCredentials: true});
+    return this.http.post<ReplyProto>(url, form);
   }
   LastSection(){
     let rawStr = window.location.pathname;

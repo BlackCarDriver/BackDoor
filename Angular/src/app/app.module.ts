@@ -7,6 +7,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { NotfoundComponent } from './notfound/notfound.component';
 import { FormsModule } from '@angular/forms';
 import { LinuxstatComponent } from './linuxstat/linuxstat.component';
+import { LogshowComponent } from './logshow/logshow.component';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import { LinuxstatComponent } from './linuxstat/linuxstat.component';
     UploadComponent,
     NotfoundComponent,
     LinuxstatComponent,
+    LogshowComponent,
   ],
   imports: [
     BrowserModule,
