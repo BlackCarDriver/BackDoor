@@ -9,6 +9,6 @@
     <div class="title"><h3>Logs Detail</h3> 
         <a class="g-a-btn gradually" (click)="clearLog()">Clear</a> 
         <a class="g-a-btn gradually" (click)="delLog()">Delete</a> </div>
-    <pre class="textbox">{{logsDetail}}</pre>
+    <pre class="textbox" style="overflow: auto;">{{logsDetail}}</pre>
     <button class="g-btn rfbtn gradually" style="position: absolute; right: 1em; top: 1em;" (click)="refresh()">Refresh</button>
 </div>

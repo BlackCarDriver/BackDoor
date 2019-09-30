@@ -8,6 +8,8 @@ import { NotfoundComponent } from './notfound/notfound.component';
 import { FormsModule } from '@angular/forms';
 import { LinuxstatComponent } from './linuxstat/linuxstat.component';
 import { LogshowComponent } from './logshow/logshow.component';
+import { GenerateComponent } from './generate/generate.component';
+import { FeedbackComponent } from './feedback/feedback.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +18,8 @@ import { LogshowComponent } from './logshow/logshow.component';
     NotfoundComponent,
     LinuxstatComponent,
     LogshowComponent,
+    GenerateComponent,
+    FeedbackComponent,
   ],
   imports: [
     BrowserModule,

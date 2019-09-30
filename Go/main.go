@@ -43,11 +43,10 @@ type Cpustat struct {
 	FtMin float64 `json:"ftmin"`
 }
 
-const htmlFilePath = "./dist/backdoor/"
 const md5_token = "fae0b27c451c728867a567e8c1bb4e53"
-const uploadFileSavePath = "./upload"
-const LogsRootPath = "./logs"
 const backdoorhtmlPaht = "./backdoor.html"
+const uploadFileSavePath = "./upload"
+const LogsRootPath = "/home/ubuntu/DockerWorkPlace/Market/DriverClub-taobao/Go/src/TaobaoServer/logs"
 
 func main() {
 	logs.SetLogger("console")
@@ -60,8 +59,8 @@ func main() {
 	mux.HandleFunc("/backdoor/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, backdoorhtmlPaht)
 	})
-	logs.Info("The progress is running at :8083")
-	err := http.ListenAndServe("0.0.0.0:8083", mux)
+	logs.Info("The progress is running at :8093")
+	err := http.ListenAndServe("0.0.0.0:8093", mux)
 	if err != nil {
 		logs.Error(err)
 	}
@@ -155,7 +154,8 @@ func BackDoorApi(w http.ResponseWriter, r *http.Request) {
 			response.Msg = "Delete success!"
 			goto tail
 		}
-
+	case "static":
+		response.Data = mokeStatic
 	default:
 		response.Status = -99
 		response.Msg = fmt.Sprintf("Unsuppose api: %s", postdata.Api)
@@ -440,4 +440,18 @@ func linuxExec(name string, arg ...string) (string, error) {
 		return "", err
 	}
 	return out.String(), nil
+}
+
+//================= generate statice demo ==============
+type Static struct {
+	Key   string      `json:"key"`
+	Value interface{} `json:"value"`
+}
+
+var mokeStatic = []Static{
+	{"Total", 1000},
+	{"Lasttime", "2019-22-12"},
+	{"VisitTime", 123},
+	{"VisitTime", 123},
+	{"VisitTime", 123},
 }

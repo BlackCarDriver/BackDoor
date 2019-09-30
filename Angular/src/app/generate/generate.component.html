@@ -1,0 +1,9 @@
+<div class="content">
+        <h2 style="text-align: center">Generate Static Data</h2>
+        <button class="g-btn rfbtn gradually" (click)="getData()">Refresh</button>
+        <ol class="msgbox">
+            <li *ngFor="let row of data" class="datalist">
+                <b class="keyname">{{row.key}}</b>{{row.value}}
+            </li>
+        </ol>
+</div>
