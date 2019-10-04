@@ -108,12 +108,13 @@ func BackDoorApi(w http.ResponseWriter, r *http.Request) {
 			CpuState Cpustat `json:"cpuState"`
 			MenState Memstat `json:"menState"`
 			VmState  string  `json:"vmState"`
+			DistUse  string  `json:"distUse"`
 		}
 		linuxstat.CpuState, _ = GetUptime()
 		linuxstat.MenState, _ = GetFree()
 		linuxstat.VmState, _ = GetVmstat()
+		linuxstat.DistUse, _ = GetDistUse()
 		response.Data = linuxstat
-
 	case "logslist":
 		data, err := GetLogsList()
 		if err != nil {
@@ -200,6 +201,17 @@ func BackDoorForm(w http.ResponseWriter, r *http.Request) {
 		logs.Error(response.Msg)
 		goto tail
 	}
+	//catch unexpect panic
+	defer func() {
+		if err, ok := recover().(error); ok {
+			response.Status = -99
+			response.Msg = fmt.Sprintf("Unexpect error happen, error: %v", err)
+			logs.Error(response.Msg)
+			if err := WriteJson(w, &response); err != nil {
+				logs.Error(err)
+			}
+		}
+	}()
 	//use different function according to the api
 	switch api {
 	case "pluginupdate": //upadate plug in by upload so file
@@ -440,6 +452,18 @@ func linuxExec(name string, arg ...string) (string, error) {
 		return "", err
 	}
 	return out.String(), nil
+}
+
+//get the statement of dist full
+func GetDistUse() (string, error) {
+	res := ""
+	var err error
+	if res, err = linuxExec("df", "-h", "/"); err != nil {
+		logs.Error(err)
+	} else {
+		res = strings.Replace(res, "\n", "</br>", -1)
+	}
+	return res, err
 }
 
 //================= generate statice demo ==============

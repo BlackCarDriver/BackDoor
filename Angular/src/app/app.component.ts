@@ -16,8 +16,6 @@ export class AppComponent {
     {name:"plugin-upload", routerline:"/upload"},
     {name:"linux-stat", routerline:"/linstat"},
     {name:"logger", routerline:"/log"},
-    {name:"generate", routerline:"/generate"},
-    {name:"feedback", routerline:"/feedback"},
     {name:"testing", routerline:"/test"},
   ];
   //the function which is displying
