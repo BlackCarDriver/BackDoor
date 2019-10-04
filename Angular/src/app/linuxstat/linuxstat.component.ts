@@ -11,6 +11,7 @@ export class LinuxstatComponent implements OnInit {
   mM : MemStat;
   mC : CpuStat;
   mH = "";
+  mD = "";
 
   constructor(
     private server: ServerService,
@@ -35,7 +36,9 @@ export class LinuxstatComponent implements OnInit {
       this.mM = tmp.menState;
       this.mC = tmp.cpuState;
       this.mH = tmp.vmState;
+      this.mD = tmp.distUse;
       this.getEle('vmstatbox').innerHTML = this.mH;
+      this.getEle('distused').innerHTML = this.mD;
       this.getEle('total').style.borderLeft = this.getCss(this.mM.total);
       this.getEle('used').style.borderLeft = this.getCss(this.mM.used);
       this.getEle('free').style.borderLeft = this.getCss(this.mM.free);
@@ -77,5 +80,6 @@ type hostStat = {
   cpuState: CpuStat,
   menState: MemStat,
   vmState: string,
+  distUse:string,
 }
 
