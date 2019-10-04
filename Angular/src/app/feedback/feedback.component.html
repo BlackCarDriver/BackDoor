@@ -1,5 +1,5 @@
 <div class="content">
-        <button class="g-btn rfbtn gradually" (click)="getData()">Refresh</button>
+        <button class="g-btn rfbtn gradually" (click)="getFeedBackData()">Refresh</button>
         <h2 style="text-align: center;margin: 5px;">Feedback</h2>
     
         <div class="displaybox">
@@ -8,9 +8,9 @@
                 <table class="mytable">
                     <tr class="tablehead">
                         <th width="4%">ID</th>
-                        <th width="13%"> 反馈时间</th>
+                        <th width="20%"> 反馈时间</th>
                         <th width="10%">问题类型</th>
-                        <th width="25%">用户ID</th>
+                        <th width="15%">用户ID</th>
                         <th width="30%">用户邮箱</th>
                         <th width="8%">状态</th>
                         <th width="10%">查看</th>
@@ -21,7 +21,7 @@
                         <td>{{row.fbtype}}</td>
                         <td>{{row.userid}}</td>
                         <td>{{row.email}}</td>
-                        <td [class.newFb]="row.state==0" [class.oldFb]="row.state==1">{{row.status==1?'已看':'未看'}}</td>
+                        <td [class.newFb]="row.status==0" [class.oldFb]="row.status==1">{{row.status==1?'已看':'未看'}}</td>
                         <td><a class="btn gradually" (click)="setUpDesPanCont(row.imgurl, row.describes, row.location);updateState(row.id);">查看</a></td>
                     </tr>
                 </table>

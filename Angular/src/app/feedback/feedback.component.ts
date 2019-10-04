@@ -35,6 +35,7 @@ export class FeedbackComponent implements OnInit {
         return;
       } else {
         this.fbdata = result.data;
+        console.log(this.fbdata)
         this.pageNumber = Math.ceil(this.fbdata.length / this.rowPrePage);
         console.log(this.fbdata);
       }
@@ -44,7 +45,7 @@ export class FeedbackComponent implements OnInit {
   //after a feedback record have been read, update it record's state to 1
   updateState(fbid: number) {
     let postdata: RequestProto = {
-      api: "setisread",
+      api: "setfbisread",
       data: fbid,
     }
     this.server.PostApi2(postdata).subscribe(result => {

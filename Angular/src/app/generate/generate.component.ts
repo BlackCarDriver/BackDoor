@@ -21,10 +21,10 @@ export class GenerateComponent implements OnInit {
 
   getData(){
     let postdata: RequestProto = {
-      api: "static",
+      api: "staticdata",
       token: this.app.token,
     }
-    this.server.PostApi(postdata).subscribe(result=>{
+    this.server.PostApi2(postdata).subscribe(result=>{
         if(result.status==0){
           this.data = result.data;
         }else{

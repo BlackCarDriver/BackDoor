@@ -20,7 +20,7 @@
     min-height: 100px;
     width: max-content;
     position: relative;
-    margin: 6em auto 1em auto;
+    margin: 6em auto 3em auto;
     box-shadow: 0 0 20px rgba(50, 50, 50, 0.1);
     background-color: #fff;
     border-radius: 5px;
@@ -70,4 +70,6 @@
     font-weight: bolder;
     margin-top: -1em;
     text-align: center;
+    height: 2em;
+    letter-spacing: 1em;
 }
