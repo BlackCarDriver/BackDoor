@@ -8,6 +8,8 @@ import { AppComponent } from '../app.component';
   styleUrls: ['./logshow.component.css']
 })
 export class LogshowComponent implements OnInit {
+  session = "go";     //to identify which kind of logs is broswing.
+  title = "Logger";
   logsList:string[];
   logsDetail:string;
   nowShowing:string;
@@ -17,17 +19,33 @@ export class LogshowComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.getLogList();
+    //init session by url
+    let tmp = this.server.LastSection();
+    if (tmp=="/nginxlog"){
+      this.session = "nginx";
+      this.title = "Nginx Logs";
+    }else if (tmp == "/log") {
+      this.session = "go";
+      this.title = "GoLogger";
+    }else{
+      alert("Unsuppose session: " + tmp);
+    }
+    if (this.app.token!="") {
+      this.refresh();
+    }
   }
+
   refresh(){
     this.getLogList();
     this.getLogDetail(this.nowShowing);
   }
+
   getLogList(){
     let postdata: RequestProto = {
-      api: "logslist",
       token: this.app.token,
     }
+    if(this.session=="nginx") postdata.api = "nginxloglist";
+    if(this.session=="go") postdata.api = "logslist";
     this.server.PostApi(postdata).subscribe(result => {
       if(result.status!=0){
         alert(result.status+" fail : "+result.msg);
@@ -42,10 +60,11 @@ export class LogshowComponent implements OnInit {
       return;
     }
     let postdata: RequestProto = {
-      api: "logsDetail",
       token: this.app.token,
       data:name,
     }
+    if(this.session=="go") postdata.api = "logsDetail";
+    if(this.session=="nginx") postdata.api = "nginxlogsdetail";
     this.server.PostApi(postdata).subscribe(result => {
       if(result.status!=0){
         alert(result.status+" fail : "+result.msg);
@@ -60,10 +79,11 @@ export class LogshowComponent implements OnInit {
       return;
     }
     let postdata: RequestProto = {
-      api: "clearlogs",
       token: this.app.token,
       data:this.nowShowing,
     }
+    if(this.session=="go") postdata.api = "clearlogs";
+    if(this.session=="nginx") postdata.api = "nginxcls";
     this.server.PostApi(postdata).subscribe(result => {
       if(result.status!=0){
         alert(result.status+" fail : "+result.msg);
@@ -79,10 +99,11 @@ export class LogshowComponent implements OnInit {
       return;
     }
     let postdata: RequestProto = {
-      api: "deletelogs",
       token: this.app.token,
       data:this.nowShowing,
     }
+    if(this.session=="go") postdata.api = "deletelogs";
+    if(this.session=="nginx") postdata.api = "nginxdel";
     this.server.PostApi(postdata).subscribe(result => {
       if(result.status!=0){
         alert(result.status+" fail : "+result.msg);

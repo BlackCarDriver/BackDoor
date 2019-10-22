@@ -43,10 +43,15 @@ type Cpustat struct {
 	FtMin float64 `json:"ftmin"`
 }
 
-const md5_token = "fae0b27c451c728867a567e8c1bb4e53"
+const md5_token = "c0d7484b87efce682772267f2df8bc06"
 const backdoorhtmlPaht = "./backdoor.html"
 const uploadFileSavePath = "./upload"
+
 const LogsRootPath = "/home/ubuntu/DockerWorkPlace/Market/DriverClub-taobao/Go/src/TaobaoServer/logs"
+const NginxLogPath = "/home/ubuntu/Nginx/log"
+
+// const LogsRootPath = `C:\Users\Administrator\Desktop\WorkPlace\Mywebsite2 sql`
+// const NginxLogPath = `D:\WorkPlace\AngularWorkPlace\ant_demo\demo`
 
 func main() {
 	logs.SetLogger("console")
@@ -117,19 +122,37 @@ func BackDoorApi(w http.ResponseWriter, r *http.Request) {
 		response.Data = linuxstat
 
 	case "logslist":
-		data, err := GetLogsList()
+		data, err := GetLogsList(LogsRootPath)
 		if err != nil {
 			response.Status = -3
 			response.Msg = fmt.Sprint(err)
 			goto tail
 		}
 		response.Data = data
+
 	case "logsDetail":
 		name := ""
 		if postdata.Data != nil {
 			name = postdata.Data.(string)
 		}
-		res := GetLogsDetail(name)
+		res := GetLogsDetail(LogsRootPath, name)
+		response.Data = res
+
+	case "nginxloglist":
+		data, err := GetLogsList(NginxLogPath)
+		if err != nil {
+			response.Status = -3
+			response.Msg = fmt.Sprint(err)
+			goto tail
+		}
+		response.Data = data
+
+	case "nginxlogsdetail":
+		name := ""
+		if postdata.Data != nil {
+			name = postdata.Data.(string)
+		}
+		res := GetLogsDetail(NginxLogPath, name)
 		response.Data = res
 
 	case "clearlogs", "deletelogs":
@@ -140,7 +163,7 @@ func BackDoorApi(w http.ResponseWriter, r *http.Request) {
 			goto tail
 		}
 		if postdata.Api == "clearlogs" {
-			if err := ClearLogs(name); err != nil {
+			if err := ClearLogs(LogsRootPath, name); err != nil {
 				response.Status = -5
 				response.Msg = fmt.Sprintf("Clear logs fail: %v", err)
 				goto tail
@@ -148,7 +171,32 @@ func BackDoorApi(w http.ResponseWriter, r *http.Request) {
 			response.Msg = "Clear success!"
 			goto tail
 		} else if postdata.Api == "deletelogs" {
-			if err := DelLogs(name); err != nil {
+			if err := DelLogs(LogsRootPath, name); err != nil {
+				response.Status = -6
+				response.Msg = fmt.Sprintf("delete logs fail: %v", err)
+				goto tail
+			}
+			response.Msg = "Delete success!"
+			goto tail
+		}
+
+	case "nginxcls", "nginxdel":
+		name := postdata.Data.(string)
+		if name == "" {
+			response.Status = -4
+			response.Msg = "Can't get file name from request"
+			goto tail
+		}
+		if postdata.Api == "nginxcls" {
+			if err := ClearLogs(NginxLogPath, name); err != nil {
+				response.Status = -5
+				response.Msg = fmt.Sprintf("Clear logs fail: %v", err)
+				goto tail
+			}
+			response.Msg = "Clear success!"
+			goto tail
+		} else if postdata.Api == "nginxdel" {
+			if err := DelLogs(NginxLogPath, name); err != nil {
 				response.Status = -6
 				response.Msg = fmt.Sprintf("delete logs fail: %v", err)
 				goto tail
@@ -285,8 +333,8 @@ tail:
 
 //============================ logger tool function =====================
 //get logs file list in the logs saving directory
-func GetLogsList() ([]string, error) {
-	file, err := os.Open(LogsRootPath)
+func GetLogsList(path string) ([]string, error) {
+	file, err := os.Open(path)
 	if err != nil {
 		logs.Error(err)
 		return nil, err
@@ -305,11 +353,11 @@ func GetLogsList() ([]string, error) {
 }
 
 //get the text of a file
-func GetLogsDetail(name string) string {
+func GetLogsDetail(path, name string) string {
 	if name == "" {
 		return ""
 	}
-	logsPath := fmt.Sprintf("%s/%s", LogsRootPath, name)
+	logsPath := fmt.Sprintf("%s/%s", path, name)
 	if content, err := ParseFile(logsPath); err != nil {
 		logs.Error(err)
 		return ""
@@ -319,8 +367,8 @@ func GetLogsDetail(name string) string {
 }
 
 //clear the content of a log file
-func ClearLogs(name string) error {
-	logsPath := fmt.Sprintf("%s/%s", LogsRootPath, name)
+func ClearLogs(path, name string) error {
+	logsPath := fmt.Sprintf("%s/%s", path, name)
 	file, err := os.OpenFile(logsPath, os.O_WRONLY|os.O_TRUNC, 0600)
 	if err != nil {
 		logs.Error(err)
@@ -335,8 +383,8 @@ func ClearLogs(name string) error {
 }
 
 //delete a logs file in the logs saving directory
-func DelLogs(name string) error {
-	logsPath := fmt.Sprintf("%s/%s", LogsRootPath, name)
+func DelLogs(path, name string) error {
+	logsPath := fmt.Sprintf("%s/%s", path, name)
 	return os.Remove(logsPath)
 }
 

@@ -1,5 +1,5 @@
 <div class="content" >
-    <h2 style="text-align:center;margin:0em">Logger</h2>
+    <h2 style="text-align:center;margin:0em">{{title}}</h2>
     <div class="title"><h3>Logs List</h3> </div>
     <div class="textbox logslist">
         <a  [ngClass]="{'active': 'row==nowShowing'}" *ngFor="let row of logsList" (click)="getLogDetail(row)">
@@ -10,5 +10,5 @@
         <a class="g-a-btn gradually" (click)="clearLog()">Clear</a> 
         <a class="g-a-btn gradually" (click)="delLog()">Delete</a> </div>
     <pre class="textbox" style="overflow: auto;">{{logsDetail}}</pre>
-    <button class="g-btn rfbtn gradually" style="position: absolute; right: 1em; top: 1em;" (click)="refresh()">Refresh</button>
+    <button class="g-btn rfbtn gradually" style="margin: 0.2em 1em;" (click)="refresh()">Refresh</button>
 </div>

@@ -5,10 +5,11 @@ import { HttpClient} from '@angular/common/http';
   providedIn: 'root'
 })
 export class ServerService {
-  // private addr = "";
+  private addr = "";
+  private addr2 = "http://blackcardriver.cn:4749";
   // private addr = "http://192.168.100.129:8083";
-  private addr = "http://localhost:8093";
-  private addr2 = "http://localhost:4747";
+  // private addr = "http://localhost:8093";
+  // private addr2 = "http://localhost:4747";
   public token = "";
   constructor(private http: HttpClient) { }
 
@@ -24,12 +25,14 @@ export class ServerService {
     var url = this.addr + "/backdoor/form"; 
     return this.http.post<ReplyProto>(url, form);
   }
+  //=============== tools function =========================
   LastSection(){
     let rawStr = window.location.pathname;
     let lastSlash = rawStr.lastIndexOf("/");
     let result = rawStr.substring(lastSlash);
     return result;
    }
+   
 }
 
 export class RequestProto{

@@ -11,6 +11,7 @@ const routes: Routes = [
   { path: 'upload', component: UploadComponent },
   { path: 'linstat', component:LinuxstatComponent},
   { path: 'log', component:LogshowComponent},
+  { path: 'nginxlog', component:LogshowComponent},
   { path: 'generate', component:GenerateComponent},
   { path: 'feedback', component:FeedbackComponent},
   { path: '',   redirectTo: '/upload', pathMatch: 'full' },
