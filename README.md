@@ -1,27 +1,37 @@
 # Backdoor
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.1.0.
+## 简介：
 
-## Development server
+这是一个简单的后台管理工具，主要用于司机俱乐部的后台管理。前端使用Angular，后端使用Go, 均原生实现，优点是轻便稳定，界面简洁，扩展容易。
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+暂时实现了以下功能：
 
-## Code scaffolding
+1. 插件更新，文件上传。
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+2. 服务器状态图形化显示。
 
-## Build
+3. 日志显示。
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+4. 运营状况数据显示。
 
-## Running unit tests
+5. 反馈数据显示。
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+   
 
-## Running end-to-end tests
+   ![](./doc/plugin.JPG)
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+   
 
-## Further help
+   ![](./doc/state.JPG)
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+    
+
+   ![](./doc/logs.JPG)
+
+    
+
+   ![](./doc/state2.JPG)
+
+    
+
+   ![](./doc/feedback.JPG)
